@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Katanacho - 202404295">
+<title>Grid Layout</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
+<style>
+:root { --red: #a30000; --fh: 34px; --tile: 640px; }
+* { box-sizing: border-box; }
+
+/* ---------- Layout: one grid on <body>, zero wrapper divs ---------- */
+body {
+  margin: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template:
+    "h h h" auto
+    "n a v" minmax(0, 1fr)
+    "n m m" minmax(0, 1fr)
+    "n f f" var(--fh)
+    / auto minmax(0, 1fr) minmax(0, 1fr);
+  font-family: "Times New Roman", Times, serif;
+  color: #111;
+  background: #fff;
+}
+
+/* ---------- Header ---------- */
+header {
+  grid-area: h;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 18px;
+  min-height: 38px;
+  padding: 0 16px;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .35);
+}
+header h1 { display: flex; align-items: center; gap: 10px; min-height: 38px; margin: 0; font-size: 18px; }
+header h1 svg { width: 24px; height: 24px; padding: 3px; border-radius: 6px; background: #fff; color: var(--red); }
+header button {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 2px; border: 0; background: none; color: #fff;
+  font: 12px system-ui, sans-serif; cursor: pointer;
+}
+header button:hover { text-decoration: underline; }
+header button svg { width: 14px; height: 14px; }
+#lang { margin-inline-start: auto; }
+header:has(span)::after { content: ""; order: 1; flex-basis: 100%; } /* line break before added content */
+header span {
+  order: 2;
+  margin-bottom: 8px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .18);
+  font: 12px system-ui, sans-serif;
+}
+
+/* ---------- Left menu (resizable) ---------- */
+nav {
+  grid-area: n;
+  width: 165px;
+  min-width: 110px;
+  max-width: 50vw;
+  resize: horizontal;
+  overflow: auto;
+  padding: 8px 6px;
+  background: #f6f6f6;
+  border-inline-end: 1px solid #e3e3e3;
+}
+nav a {
+  display: flex; align-items: center; gap: 9px;
+  padding: 6px 8px; border-radius: 6px;
+  color: #333; text-decoration: none; white-space: nowrap;
+  font: 12px system-ui, sans-serif;
+}
+nav a:hover { background: #e9e9e9; }
+nav svg { flex: none; width: 16px; height: 16px; color: var(--c); }
+
+/* ---------- CSS animation section ---------- */
+section {
+  grid-area: a;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  text-align: center;
+  background: linear-gradient(135deg, #c80000, #8a0000);
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .55);
+}
+section::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: -1;
+  width: calc(100% + var(--tile));
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='400'><defs><path id='l' d='M30 0H70Q100 0 100 30V92Q100 100 92 100H30Q0 100 0 70V30Q0 0 30 0Z'/></defs><g fill='white'><use href='%23l' transform='translate(10 20) scale(1.1)' fill-opacity='.17'/><use href='%23l' transform='translate(215 0) scale(1.25)' fill-opacity='.13'/><use href='%23l' transform='translate(80 150) scale(.55)' fill-opacity='.12'/><use href='%23l' transform='translate(150 235) scale(.7)' fill-opacity='.2'/><use href='%23l' transform='translate(310 215) scale(1.05)' fill-opacity='.15'/><use href='%23l' transform='translate(455 285) scale(.6)' fill-opacity='.2'/></g><g fill='none' stroke='white' stroke-opacity='.45'><use href='%23l' transform='translate(140 70) scale(.35)' stroke-width='5.7'/><use href='%23l' transform='translate(420 130) scale(.22)' stroke-width='9'/><use href='%23l' transform='translate(30 300) scale(.3)' stroke-width='6.7'/><rect x='505' y='40' width='110' height='330' rx='45' stroke-width='14' stroke-opacity='.12'/><rect x='520' y='55' width='80' height='300' rx='32' stroke-width='2' stroke-opacity='.3'/></g></svg>") 0 0 / var(--tile) 400px;
+  animation: slide 18s linear infinite;
+}
+@keyframes slide { to { transform: translateX(calc(-1 * var(--tile))); } }
+
+/* ---------- 3D heart ---------- */
+model-viewer { grid-area: v; width: auto; height: auto; min-width: 0; min-height: 0; background: #f2f2f2; }
+
+/* ---------- Scrollable content ---------- */
+article { grid-area: m; overflow: auto; padding: 4px 16px 36px; }
+article h2 { margin: 14px 0 10px; font-size: 20px; }
+article h3 { margin: 16px 0 8px; font-size: 16px; }
+article p { margin: 0; font-size: 13px; line-height: 1.5; }
+article p[data-b] { display: flex; align-items: center; gap: 10px; }
+article p[data-b]::before {
+  content: attr(data-b);
+  flex: none;
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 4px;
+  background: var(--c); color: var(--t, #fff);
+  font: bold 13px system-ui, sans-serif;
+}
+
+/* ---------- Footer (always visible, only under the content) ---------- */
+footer {
+  grid-area: f;
+  overflow: hidden;
+  padding: 0 70px;
+  border-top: 1px solid #e3e3e3;
+  background: #fafafa;
+  color: #555;
+  font-size: 11px;
+  line-height: var(--fh);
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Floating button between content and footer ---------- */
+#fab {
+  position: fixed;
+  z-index: 3;
+  bottom: calc(var(--fh) - 20px);
+  inset-inline-end: 24px;
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  border: 0; border-radius: 50%;
+  background: var(--red); color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .3);
+  cursor: pointer;
+  transition: transform .25s, box-shadow .25s;
+}
+#fab svg { width: 20px; height: 20px; transition: transform .25s; }
+#fab:hover { transform: scale(1.12); box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
+#fab:hover svg { transform: rotate(90deg); }
+</style>
+</head>
+<body>
+<header>
+  <h1><i data-lucide="graduation-cap"></i><b data-t="title"></b></h1>
+  <button id="lang"><i data-lucide="globe"></i><b data-t="lang"></b></button>
+  <button id="add"><i data-lucide="plus"></i><b data-t="add"></b></button>
+  <button id="clear"><i data-lucide="trash"></i><b data-t="clear"></b></button>
+</header>
+<nav></nav>
+<section>CSS Animation</section>
+<model-viewer src="heart.glb" alt="3D human heart" camera-controls auto-rotate auto-rotate-delay="0" rotation-per-second="40deg" touch-action="pan-y" interaction-prompt="none" shadow-intensity="1"></model-viewer>
+<article></article>
+<footer data-t="foot"></footer>
+<button id="fab" aria-label="Add content"><i data-lucide="plus"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@1.73.0/dist/umd/lucide.min.js"></script>
+<script>
+const icons = [
+  ["layout-dashboard", "#3b82f6"], ["braces", "#14b8a6"], ["paintbrush", "#f97316"], ["square-terminal", "#ef4444"],
+  ["component", "#8b5cf6"], ["layout-template", "#10b981"], ["file-code", "#f59e0b"], ["folder", "#e11d48"],
+  ["eye", "#0ea5e9"], ["monitor-smartphone", "#6366f1"], ["palette", "#f97316"], ["type", "#ec4899"],
+  ["sparkles", "#a855f7"], ["bug", "#64748b"], ["settings", "#eab308"]
+];
+const badges = [
+  ["HTML", "#e34c26"], ["CSS", "#264de4"], ["JS", "#f7df1e", "#000"], ["DOM", "#7c3aed"], ["FLEX", "#0d9488"],
+  ["GRID", "#db2777"], ["RWD", "#16a34a"], ["A11Y", "#0369a1"], ["PERF", "#ea580c"], ["GIT", "#f05032"]
+];
+const T = {
+  en: {
+    title: "Training 2026", lang: "العربية", add: "Add content", clear: "Clear content", chip: "Dynamic content",
+    foot: "© 2026 Training 2026. All rights reserved. · Jonathan Katanacho · 202404295",
+    menu: ["Dashboard", "HTML Editor", "CSS Styles", "JS Console", "Components", "Templates", "Snippets", "Projects",
+      "Live Preview", "Responsive Design", "Color Palette", "Typography", "Animations", "Debugger", "Settings"],
+    h: "HTML, CSS & JavaScript",
+    intro: "The web platform is built on three complementary technologies. Each has a distinct job, and together they form every page you browse.",
+    topics: [
+      ["HTML", "HTML (HyperText Markup Language) provides the structure of a page: headings, paragraphs, links, images, and forms. It gives the browser a document to render and gives assistive tools something meaningful to read."],
+      ["CSS", "CSS (Cascading Style Sheets) controls presentation: layout, color, spacing, typography, and responsiveness. It lets the same HTML adapt to different screen sizes and themes without changing the markup."],
+      ["JavaScript", "JavaScript adds behavior. It reacts to clicks and key presses, fetches data from servers, updates the page without reloading, and powers everything from form validation to full applications."],
+      ["The DOM", "The Document Object Model is the live tree the browser builds from your HTML. JavaScript reads and changes this tree, and the browser re-renders whatever changed, which is how pages become interactive."],
+      ["Flexbox", "Flexbox lays items out along a single axis. It makes it easy to align things, distribute free space, and let items grow or shrink, which is ideal for toolbars, menus, and rows of cards."],
+      ["CSS Grid", "CSS Grid works in two dimensions at once. You define rows and columns, name areas, and place elements into them. This whole page is one grid on the body element, with no wrapper divs."],
+      ["Responsive Design", "Responsive design means one page that works on every screen. Flexible tracks, relative units, and media queries let content reflow instead of overflowing when the window gets smaller."],
+      ["Accessibility", "Accessibility makes pages usable for everyone, including people using screen readers or keyboards. Semantic tags, alt text, visible focus states, and good contrast cover most of the basics."],
+      ["Performance", "Performance is about doing less work. Smaller files, fewer elements, animations that only use transform and opacity, and lazy loading all help pages appear and respond quickly."],
+      ["Git & GitHub", "Git tracks every change to a project so you can review history and undo mistakes. GitHub hosts the repository online, which makes sharing, reviewing, and collaborating straightforward."]
+    ]
+  },
+  ar: {
+    title: "تدريب 2026", lang: "English", add: "إضافة محتوى", clear: "مسح المحتوى", chip: "محتوى ديناميكي",
+    foot: "© 2026 تدريب 2026. جميع الحقوق محفوظة. · Jonathan Katanacho · 202404295",
+    menu: ["لوحة التحكم", "محرر HTML", "أنماط CSS", "وحدة تحكم JS", "المكونات", "القوالب", "المقتطفات", "المشاريع",
+      "المعاينة المباشرة", "التصميم المتجاوب", "لوحة الألوان", "الخطوط", "الرسوم المتحركة", "مصحح الأخطاء", "الإعدادات"],
+    h: "HTML وCSS وJavaScript",
+    intro: "تقوم منصة الويب على ثلاث تقنيات متكاملة. لكل منها دور مختلف، ومعًا تشكّل كل صفحة تتصفحها.",
+    topics: [
+      ["HTML", "توفر لغة HTML (لغة ترميز النص التشعبي) بنية الصفحة: العناوين والفقرات والروابط والصور والنماذج. فهي تعطي المتصفح مستندًا لعرضه، وتعطي الأدوات المساعدة محتوى ذا معنى لقراءته."],
+      ["CSS", "تتحكم CSS (أوراق الأنماط المتتالية) في طريقة العرض: التخطيط والألوان والمسافات والخطوط والتجاوب. وتتيح لنفس كود HTML أن يتكيف مع أحجام الشاشات والسمات المختلفة دون تغيير الترميز."],
+      ["JavaScript", "تضيف JavaScript السلوك إلى الصفحة. فهي تستجيب للنقرات وضغطات المفاتيح، وتجلب البيانات من الخوادم، وتحدّث الصفحة دون إعادة تحميلها، وتشغّل كل شيء من التحقق من النماذج إلى التطبيقات الكاملة."],
+      ["نموذج DOM", "نموذج كائن المستند (DOM) هو الشجرة الحية التي يبنيها المتصفح من كود HTML. تقرأ JavaScript هذه الشجرة وتعدّلها، ثم يعيد المتصفح رسم ما تغيّر، وهكذا تصبح الصفحات تفاعلية."],
+      ["Flexbox", "يرتّب Flexbox العناصر على محور واحد. فهو يسهّل محاذاة العناصر وتوزيع المساحة الفارغة والسماح للعناصر بالتمدد أو التقلص، وهو مثالي لأشرطة الأدوات والقوائم وصفوف البطاقات."],
+      ["CSS Grid", "يعمل CSS Grid في بُعدين في الوقت نفسه. تحدد الصفوف والأعمدة وتسمّي المناطق ثم تضع العناصر فيها. هذه الصفحة كلها شبكة واحدة على عنصر body بدون أي div إضافي."],
+      ["التصميم المتجاوب", "التصميم المتجاوب يعني صفحة واحدة تعمل على كل الشاشات. تسمح المسارات المرنة والوحدات النسبية واستعلامات الوسائط للمحتوى بإعادة الترتيب بدل أن يفيض عند تصغير النافذة."],
+      ["إمكانية الوصول", "إمكانية الوصول تجعل الصفحات قابلة للاستخدام من الجميع، بمن فيهم مستخدمو قارئات الشاشة ولوحات المفاتيح. الوسوم الدلالية والنص البديل وحالات التركيز الواضحة والتباين الجيد تغطي معظم الأساسيات."],
+      ["الأداء", "الأداء يعني إنجاز عمل أقل. الملفات الأصغر والعناصر الأقل والحركات التي تستخدم transform وopacity فقط والتحميل الكسول، كلها تساعد الصفحات على الظهور والاستجابة بسرعة."],
+      ["Git وGitHub", "يتتبع Git كل تغيير في المشروع حتى تتمكن من مراجعة السجل والتراجع عن الأخطاء. ويستضيف GitHub المستودع على الإنترنت، مما يجعل المشاركة والمراجعة والتعاون أمرًا سهلًا."]
+    ]
+  }
+};
+
+const $ = s => document.querySelector(s);
+const html = document.documentElement;
+let lang = "en";
+
+function render() {
+  const t = T[lang];
+  html.lang = lang;
+  html.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-t]").forEach(el => el.textContent = t[el.dataset.t]);
+  document.querySelectorAll("header span").forEach((s, i) => s.textContent = `${t.chip} #${i + 1}`);
+  $("nav").innerHTML = icons.map(([icon, c], i) =>
+    `<a href="#" style="--c:${c}"><i data-lucide="${icon}"></i>${t.menu[i]}</a>`).join("");
+  $("article").innerHTML = `<h2>${t.h}</h2><p>${t.intro}</p>` + t.topics.map(([h, p], i) => {
+    const [b, c, tc = "#fff"] = badges[i];
+    return `<h3>${h}</h3><p data-b="${b}" style="--c:${c};--t:${tc}">${p}</p>`;
+  }).join("");
+  lucide.createIcons({ icons: lucide.icons });
+}
+
+function addContent() {
+  const chip = document.createElement("span");
+  chip.textContent = `${T[lang].chip} #${$("header").querySelectorAll("span").length + 1}`;
+  $("header").append(chip);
+}
+
+// If heart.glb isn't next to this file, load the same CC0 heart straight from Grab3D
+$("model-viewer").addEventListener("error", e => e.target.src = "https://grab3d.com/dl/human-heart/human-heart-light.glb", { once: true });
+
+$("#lang").onclick =() => { lang = lang === "en" ? "ar" : "en"; render(); };
+$("#add").onclick = $("#fab").onclick = addContent;
+$("#clear").onclick = () => {
+  document.querySelectorAll("header span").forEach(s => s.remove());
+  $("nav").style.width = "";
+  $("article").scrollTop = 0;
+  lang = "en";
+  render();
+};
+render();
+</script>
+</body>
+</html>
